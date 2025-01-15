@@ -2,6 +2,34 @@ import styles from "@/app/page.module.scss";
 import logoImg from "/public/logo.svg";
 import Image from "next/image";
 import Link from "next/link";
+import "@/services/api";
+import { api } from "@/services/api";
+import { redirect } from "next/navigation"
+
+const handleRegister = async (formData: FormData) => {
+  "use server";
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const password = formData.get("password");
+
+  if (name === "" || email === "" || password === "") {
+    console.log("Preencha todos os campos");
+    return;
+  }
+
+  try{
+    await api.post("/users",{
+      name,
+      email,
+      password
+    })
+  }catch(err){
+    console.log("Erro");
+    console.log(err);
+  }
+
+  redirect("/")
+};
 
 function Signup() {
   return (
@@ -11,7 +39,7 @@ function Signup() {
 
         <section className={styles.login}>
           <h1>Crie seu cadastro</h1>
-          <form>
+          <form action={handleRegister}>
             <input
               type="text"
               required
