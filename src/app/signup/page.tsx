@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import "@/services/api";
 import { api } from "@/services/api";
-import { redirect } from "next/navigation"
+import { redirect } from "next/navigation";
 
 const handleRegister = async (formData: FormData) => {
   "use server";
@@ -17,18 +17,18 @@ const handleRegister = async (formData: FormData) => {
     return;
   }
 
-  try{
-    await api.post("/users",{
+  try {
+    await api.post("/users", {
       name,
       email,
-      password
-    })
-  }catch(err){
+      password,
+    });
+  } catch (err) {
     console.log("Erro");
     console.log(err);
   }
 
-  redirect("/")
+  redirect("/");
 };
 
 function Signup() {
