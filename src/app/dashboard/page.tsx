@@ -1,9 +1,10 @@
 import React from 'react'
+import { Order } from './components/orders'
 
 function Dashboard() {
   return (
     <div>
-        <h1>Painel</h1>
+        <Order/>
     </div>
   )
 }
