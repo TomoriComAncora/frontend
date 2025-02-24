@@ -1,0 +1,15 @@
+.button{
+    background-color: var(--green-900);
+    height: 38px;
+    border: 0;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--white);
+    opacity: .7;
+    transition: opacity .2s;
+
+    &:hover{
+        opacity: 1;
+    }
+}
