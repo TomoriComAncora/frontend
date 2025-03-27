@@ -4,16 +4,63 @@ import styles from "./styles.module.scss";
 import { Upload } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/app/dashboard/components/button";
+import { api } from "@/services/api";
+import { getCookieClient } from "@/lib/cookieClient";
+import { toast } from "sonner";
 
-export function Form() {
+interface categoryProps {
+  id: string;
+  name: string;
+}
+
+interface props {
+  categories: categoryProps[];
+}
+
+export function Form({ categories }: props) {
   const [image, setImage] = useState<File>();
   const [prevImage, setPreveImage] = useState("");
+
+  async function handleRegisterProduct(formData: FormData) {
+    const categoryId = formData.get("category");
+    const name = formData.get("name");
+    const price = formData.get("price");
+    const description = formData.get("description");
+
+    if (!categoryId || !name || !price || !description || !image) {
+      toast.warning("Preencha todos os campos");
+      return;
+    }
+
+    const data = new FormData();
+
+    data.append("name", name);
+    data.append("price", price);
+    data.append("description", description);
+    data.append("category_id", categories[Number(categoryId)].id);
+    data.append("file", image);
+
+    const token = getCookieClient();
+
+    await api.post("/product", data, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).catch((err)=>{
+      console.log(err);
+      toast.error("Erro ao cadastrar produto!");
+      return;
+    });
+
+    toast.success("Produto cadastrado com sucesso!");
+  }
+
   async function handleFile(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files[0]) {
       const image = e.target.files[0];
-      console.log(image);
       if (image.type !== "image/jpeg" && image.type !== "image/png") {
-        console.log("Formato inválido!");
+        toast.warning("Formato inválido!");
+        return;
       }
       setImage(image);
       setPreveImage(URL.createObjectURL(image));
@@ -24,14 +71,14 @@ export function Form() {
     <main className={styles.container}>
       <h1>Novo produto</h1>
 
-      <form className={styles.form}>
+      <form className={styles.form} action={handleRegisterProduct}>
         <label className={styles.labelImage}>
           <span>
             <Upload size={30} color="#fff" />
           </span>
           <input
             type="file"
-            accept="image/png image/jpeg"
+            accept="image/png, image/jpeg"
             required
             onChange={handleFile}
           />
@@ -49,12 +96,11 @@ export function Form() {
         </label>
 
         <select name="category">
-          <option value={1} key={1}>
-            Pizzas
-          </option>
-          <option value={1} key={1}>
-            Massas
-          </option>
+          {categories.map((category, index) => (
+            <option key={category.id} value={index}>
+              {category.name}
+            </option>
+          ))}
         </select>
 
         <input

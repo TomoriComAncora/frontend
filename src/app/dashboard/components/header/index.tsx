@@ -5,14 +5,16 @@ import Image from "next/image";
 import Logo from "/public/logo.svg";
 import { LogOut } from "lucide-react";
 import { deleteCookie } from "cookies-next";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function Header() {
   const router = useRouter();
 
-  async function handleLogout(){
-    deleteCookie("session", {path: "/"});
+  async function handleLogout() {
+    deleteCookie("session", { path: "/" });
     router.replace("/");
+    toast.success("Logout feito com sucesso!");
   }
 
   return (
