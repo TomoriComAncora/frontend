@@ -1,12 +1,32 @@
-import React from 'react'
-import { Order } from './components/orders'
+import { Order } from "./components/orders";
+import { api } from "@/services/api";
+import { getCookiesServer } from "@/lib/cookieServer";
+import { OrderProps } from "@/lib/Order.type";
 
-function Dashboard() {
-  return (
-    <div>
-        <Order/>
-    </div>
-  )
+async function getOrders(): Promise<OrderProps[] | []> {
+  try {
+    const token = await getCookiesServer();
+    const response = await api.get("/orders", {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    return response.data || [];
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
 }
 
-export default Dashboard
+async function Dashboard() {
+  const orders = await getOrders();
+  console.log(orders);
+  return (
+    <div>
+      <Order orders={orders} />
+    </div>
+  );
+}
+
+export default Dashboard;

@@ -7,6 +7,7 @@ import { Button } from "@/app/dashboard/components/button";
 import { api } from "@/services/api";
 import { getCookieClient } from "@/lib/cookieClient";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface categoryProps {
   id: string;
@@ -18,6 +19,7 @@ interface props {
 }
 
 export function Form({ categories }: props) {
+  const router = useRouter();
   const [image, setImage] = useState<File>();
   const [prevImage, setPreveImage] = useState("");
 
@@ -42,17 +44,20 @@ export function Form({ categories }: props) {
 
     const token = getCookieClient();
 
-    await api.post("/product", data, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).catch((err)=>{
-      console.log(err);
-      toast.error("Erro ao cadastrar produto!");
-      return;
-    });
+    await api
+      .post("/product", data, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error("Erro ao cadastrar produto!");
+        return;
+      });
 
     toast.success("Produto cadastrado com sucesso!");
+    router.push("/dashboard");
   }
 
   async function handleFile(e: ChangeEvent<HTMLInputElement>) {
